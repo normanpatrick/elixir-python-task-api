@@ -6,9 +6,18 @@ defmodule MyApp.CLRTManagerTest do
   describe "slrtasks" do
     alias MyApp.CLRTManager.SLRTask
 
-    @valid_attrs %{description: "some description", is_active: true, name: "some name"}
-    @update_attrs %{description: "some updated description", is_active: false, name: "some updated name"}
-    @invalid_attrs %{description: nil, is_active: nil, name: nil}
+    @valid_attrs %{description: "some description",
+                   is_active: true,
+                   name: "some name",
+                   status: "some status"}
+    @update_attrs %{description: "some updated description",
+                    is_active: false,
+                    name: "some updated name",
+                    status: "some updated status"}
+    @invalid_attrs %{description: nil,
+                     is_active: nil,
+                     name: nil,
+                     status: nil}
 
     def slr_task_fixture(attrs \\ %{}) do
       {:ok, slr_task} =

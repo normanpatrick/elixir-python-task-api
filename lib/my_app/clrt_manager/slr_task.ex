@@ -8,8 +8,10 @@ defmodule MyApp.CLRTManager.SLRTask do
     field :description, :string
     field :is_active, :boolean, default: false
     field :name, :string
+    field :status, :string
 
-    timestamps()
+    # microseconds timestamp for this specific schema
+    timestamps(type: :utc_datetime_usec)
   end
 
   @doc false
