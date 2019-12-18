@@ -7,5 +7,6 @@ defmodule MyAppWeb.Router do
 
   scope "/api", MyAppWeb do
     pipe_through :api
+    resources "/things", SLRTaskController, except: [:update, :delete, :edit, :new]
   end
 end
