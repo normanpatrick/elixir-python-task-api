@@ -14,6 +14,8 @@ defmodule MyAppWeb.SLRTaskView do
     %{id: slr_task.id,
       name: slr_task.name,
       description: slr_task.description,
+      status: slr_task.status,
+      created: slr_task.inserted_at,
       is_active: slr_task.is_active}
   end
 end

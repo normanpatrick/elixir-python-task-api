@@ -12,7 +12,10 @@ defmodule MyAppWeb.SLRTaskController do
   end
 
   def create(conn, %{"slr_task" => slr_task_params}) do
-    with {:ok, %SLRTask{} = slr_task} <- CLRTManager.create_slr_task(slr_task_params) do
+    # params = Map.put(slr_task_params, "status", "just created")
+    params = slr_task_params
+    # IO.inspect(params, label: "wahoo3")
+    with {:ok, %SLRTask{} = slr_task} <- CLRTManager.create_slr_task(params) do
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.slr_task_path(conn, :show, slr_task))

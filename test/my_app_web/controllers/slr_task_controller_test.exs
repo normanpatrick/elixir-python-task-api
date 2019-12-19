@@ -7,14 +7,21 @@ defmodule MyAppWeb.SLRTaskControllerTest do
   @create_attrs %{
     description: "some description",
     is_active: true,
-    name: "some name"
+    name: "some name",
+    status: "some status"
   }
   @update_attrs %{
     description: "some updated description",
     is_active: false,
-    name: "some updated name"
+    name: "some updated name",
+    status: "some updated status"
   }
-  @invalid_attrs %{description: nil, is_active: nil, name: nil}
+  @invalid_attrs %{
+    description: nil,
+    is_active: nil,
+    name: nil,
+    status: nil
+  }
 
   def fixture(:slr_task) do
     {:ok, slr_task} = CLRTManager.create_slr_task(@create_attrs)
@@ -34,7 +41,9 @@ defmodule MyAppWeb.SLRTaskControllerTest do
 
   describe "create slr_task" do
     test "renders slr_task when data is valid", %{conn: conn} do
-      conn = post(conn, Routes.slr_task_path(conn, :create), slr_task: @create_attrs)
+      conn = post(conn,
+        Routes.slr_task_path(conn, :create),
+        slr_task: @create_attrs)
       assert %{"id" => id} = json_response(conn, 201)["data"]
 
       conn = get(conn, Routes.slr_task_path(conn, :show, id))
@@ -43,7 +52,8 @@ defmodule MyAppWeb.SLRTaskControllerTest do
                "id" => id,
                "description" => "some description",
                "is_active" => true,
-               "name" => "some name"
+               "name" => "some name",
+               "status" => "some status"
              } = json_response(conn, 200)["data"]
     end
 
@@ -67,7 +77,8 @@ defmodule MyAppWeb.SLRTaskControllerTest do
                "id" => id,
                "description" => "some updated description",
                "is_active" => false,
-               "name" => "some updated name"
+               "name" => "some updated name",
+               "status" => "some status"
              } = json_response(conn, 200)["data"]
     end
 

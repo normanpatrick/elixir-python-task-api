@@ -17,7 +17,7 @@ defmodule MyApp.CLRTManager.SLRTask do
   @doc false
   def changeset(slr_task, attrs) do
     slr_task
-    |> cast(attrs, [:name, :description, :is_active])
+    |> cast(attrs, [:name, :description, :is_active, :status])
     |> validate_required([:name, :description, :is_active])
     |> unique_constraint(:name)
   end
