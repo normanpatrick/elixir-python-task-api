@@ -5,6 +5,7 @@ defmodule MyAppWeb.Endpoint do
     websocket: true,
     longpoll: false
 
+  # plug :debugprint
   # Serve at "/" the static files from "priv/static" directory.
   #
   # You should set gzip to true if you are running phx.digest
@@ -43,8 +44,15 @@ defmodule MyAppWeb.Endpoint do
   plug Corsica,
     origins: "*",
     allow_credentials: true,
-    allow_headers: ["Content-Type"],
+    allow_headers: :all,
     log: [rejected: :error, invalid: :warn, accepted: :debug]
 
   plug MyAppWeb.Router
+
+  # defp debugprint(conn, _opts) do
+  #   # IO.inspect(conn)
+  #   IO.inspect(get_req_header(conn, "access-control-allow-headers"),
+  #     label: "wahoo-access-control-allow-headers")
+  #   conn
+  # end
 end

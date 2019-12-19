@@ -119,6 +119,19 @@ defmodule MyAppWeb.SLRTaskControllerTest do
     end
   end
 
+  describe "preflight OPTIONS tests" do
+    @tag :skip
+    test "check preflight req", %{conn: conn} do
+      conn =
+        conn
+        |> Plug.Conn.put_req_header("origin", "http://foo.com/")
+        |> Plug.Conn.put_req_header("access-control-request-headers", "X-Requested-With")
+        |> IO.inspect
+        |> options(Routes.slr_task_path(conn, :create))
+      assert json_response(conn, 200)["errors"] != %{}
+    end
+  end
+
   defp create_slr_task(_) do
     slr_task = fixture(:slr_task)
     {:ok, slr_task: slr_task}
