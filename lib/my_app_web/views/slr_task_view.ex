@@ -10,6 +10,10 @@ defmodule MyAppWeb.SLRTaskView do
     %{data: render_one(slr_task, SLRTaskView, "slr_task.json")}
   end
 
+  def render("error.json", %{errors: errors}) do
+    %{errors: errors}
+  end
+
   def render("slr_task.json", %{slr_task: slr_task}) do
     %{id: slr_task.id,
       name: slr_task.name,

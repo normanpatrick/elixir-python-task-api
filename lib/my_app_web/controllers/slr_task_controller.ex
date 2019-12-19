@@ -6,6 +6,18 @@ defmodule MyAppWeb.SLRTaskController do
 
   action_fallback MyAppWeb.FallbackController
 
+  def translate_errors(changeset) do
+    Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
+      Enum.reduce(opts, msg, fn {key, value}, acc ->
+        String.replace(acc, "%{#{key}}", to_string(value))
+      end)
+    end)
+    |> Enum.reduce("", fn {k, v}, acc ->
+      joined_errors = Enum.join(v, "; ")
+      "#{acc}#{k}: #{joined_errors}\n"
+    end)
+  end
+
   def index(conn, _params) do
     slrtasks = CLRTManager.list_slrtasks()
     render(conn, "index.json", slrtasks: slrtasks)
@@ -15,11 +27,16 @@ defmodule MyAppWeb.SLRTaskController do
     # params = Map.put(slr_task_params, "status", "just created")
     params = slr_task_params
     # IO.inspect(params, label: "wahoo3")
-    with {:ok, %SLRTask{} = slr_task} <- CLRTManager.create_slr_task(params) do
-      conn
-      |> put_status(:created)
-      |> put_resp_header("location", Routes.slr_task_path(conn, :show, slr_task))
-      |> render("show.json", slr_task: slr_task)
+    case CLRTManager.create_slr_task(params) do
+    {:ok, %SLRTask{} = slr_task} ->
+        conn
+        |> put_status(:created)
+        |> put_resp_header("location", Routes.slr_task_path(conn, :show, slr_task))
+        |> render("show.json", slr_task: slr_task)
+      {:error, %Ecto.Changeset{} = echangeset } ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render("error.json", errors: translate_errors(echangeset))
     end
   end
 

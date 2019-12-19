@@ -61,6 +61,22 @@ defmodule MyAppWeb.SLRTaskControllerTest do
       conn = post(conn, Routes.slr_task_path(conn, :create), slr_task: @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
     end
+
+    test "proper error when duplicate create is attempted", %{conn: conn} do
+      conn = post(conn,
+        Routes.slr_task_path(conn, :create),
+        slr_task: @create_attrs)
+      assert %{"id" => id} = json_response(conn, 201)["data"]
+
+      # try to create the same record again, we only care about :name being unique
+      conn = post(conn,
+        Routes.slr_task_path(conn, :create),
+        slr_task: @create_attrs)
+      assert %{
+        "errors" => "name: has already been taken\n"
+      } = json_response(conn, 422)
+
+    end
   end
 
   describe "update slr_task" do
