@@ -38,6 +38,14 @@ defmodule MyApp.CLRTManager do
   def get_slr_task!(id), do: Repo.get!(SLRTask, id)
 
   @doc """
+  Gets a single slr_task.
+
+  Returns :error the Slr task does not exist.
+
+  """
+  def get_slr_task(id), do: Repo.get(SLRTask, id)
+
+  @doc """
   Creates a slr_task.
 
   ## Examples

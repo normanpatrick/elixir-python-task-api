@@ -119,6 +119,17 @@ defmodule MyAppWeb.SLRTaskControllerTest do
     end
   end
 
+  describe "view individual slr_task" do
+    setup [:create_slr_task]
+
+    test "view non-existent slr_task with binary-id", %{conn: conn} do
+      id = "cd21be2c-2945-4c28-bda9-fa51103213f0"
+      conn = get(conn, Routes.slr_task_path(conn, :show, id))
+      assert json_response(conn, 404)["errors"] ==
+        %{"error" => "record could not be found"}
+    end
+  end
+
   describe "preflight OPTIONS tests" do
     @tag :skip
     test "check preflight req", %{conn: conn} do

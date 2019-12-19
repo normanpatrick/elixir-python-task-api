@@ -41,12 +41,18 @@ defmodule MyAppWeb.SLRTaskController do
   end
 
   def show(conn, %{"id" => id}) do
-    slr_task = CLRTManager.get_slr_task!(id)
-    render(conn, "show.json", slr_task: slr_task)
+    case CLRTManager.get_slr_task(id) do
+      %SLRTask{} = slr_task ->
+        render(conn, "show.json", slr_task: slr_task)
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> render("error.json", errors: %{error: "record could not be found"})
+    end
   end
 
   def update(conn, %{"id" => id, "slr_task" => slr_task_params}) do
-    slr_task = CLRTManager.get_slr_task!(id)
+    slr_task = CLRTManager.get_slr_task(id)
 
     with {:ok, %SLRTask{} = slr_task} <- CLRTManager.update_slr_task(slr_task, slr_task_params) do
       render(conn, "show.json", slr_task: slr_task)
@@ -54,7 +60,7 @@ defmodule MyAppWeb.SLRTaskController do
   end
 
   def delete(conn, %{"id" => id}) do
-    slr_task = CLRTManager.get_slr_task!(id)
+    slr_task = CLRTManager.get_slr_task(id)
 
     with {:ok, %SLRTask{}} <- CLRTManager.delete_slr_task(slr_task) do
       send_resp(conn, :no_content, "")
