@@ -128,6 +128,13 @@ defmodule MyAppWeb.SLRTaskControllerTest do
       assert json_response(conn, 404)["errors"] ==
         %{"error" => "record could not be found"}
     end
+    @tag skip: "need a better way to handle exceptions"
+    test "view non-existent slr_task with invalid-id", %{conn: conn} do
+      id = "123"
+      conn = get(conn, Routes.slr_task_path(conn, :show, id))
+      assert json_response(conn, 404)["errors"] ==
+        %{"error" => "record could not be found"}
+    end
   end
 
   describe "preflight OPTIONS tests" do
