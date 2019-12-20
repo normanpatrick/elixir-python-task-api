@@ -40,6 +40,16 @@ defmodule MyAppWeb.PyTaskController do
     render(conn, "index.json", pytasks: pytasks)
   end
 
+  def lrt_clear(conn, _params) do
+    # this is a hack to clear all tasks
+    res = for py_task <- PyTaskMgr.list_pytasks do
+      PyTaskMgr.delete_py_task(py_task)
+    end
+    count = Enum.count(res)
+    IO.puts("#{count} deleted")
+    render(conn, "info.json", info: %{count: count})
+  end
+
   def create(conn, %{"py_task" => py_task_params}) do
     with {:ok, %PyTask{} = py_task} <- PyTaskMgr.create_py_task(py_task_params) do
       conn

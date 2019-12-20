@@ -12,6 +12,7 @@ defmodule MyAppWeb.Router do
     post "/lrt", PyTaskController, :lrt_create
     get "/lrt/:id", PyTaskController, :lrt_show
     get "/lrt", PyTaskController, :lrt_index
+    get "/lrtclear", PyTaskController, :lrt_clear
     resources "/pytasks", PyTaskController, only: [:index, :show, :create, :delete]
   end
 end

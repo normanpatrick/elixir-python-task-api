@@ -34,6 +34,12 @@ defmodule MyAppWeb.PyTaskControllerTest do
     end
   end
 
+  describe "delete lrt entries" do
+    test "clear all lrt", %{conn: conn} do
+      conn = get(conn, Routes.py_task_path(conn, :lrt_clear))
+      assert %{"count" => 0} = json_response(conn, 200)
+    end
+  end
   describe "create elixir task (lrt)" do
     test "renders lrt when data is valid", %{conn: conn} do
       conn = post(conn,
