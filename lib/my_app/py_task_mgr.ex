@@ -106,7 +106,7 @@ defmodule MyApp.PyTaskMgr do
     IO.puts("[#{id}] starting dummy lrt for #{how_many_seconds}s...")
     for i <- 0..how_many_seconds do
       :timer.sleep(1000)
-      IO.puts("at #{i} seconds")
+      IO.puts("[#{id}] at #{i} seconds")
     end
   end
 end

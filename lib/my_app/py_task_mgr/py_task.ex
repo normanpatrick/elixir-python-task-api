@@ -10,7 +10,7 @@ defmodule MyApp.PyTaskMgr.PyTask do
     field :name, :string
     field :status, :string
 
-    timestamps()
+    timestamps(type: :utc_datetime_usec)
   end
 
   @doc false
