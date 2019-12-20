@@ -9,5 +9,8 @@ defmodule MyAppWeb.Router do
     pipe_through :api
     resources "/things", SLRTaskController, except: [:update, :delete, :edit, :new]
     options "/things", SLRTaskController, :nothing
+    post "/lrt", PyTaskController, :lrt_create
+    get "/lrt/:id", PyTaskController, :lrt_show
+    resources "/pytasks", PyTaskController, only: [:index, :show, :create, :delete]
   end
 end
