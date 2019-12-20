@@ -36,7 +36,9 @@ defmodule MyAppWeb.PyTaskControllerTest do
 
   describe "create elixir task (lrt)" do
     test "renders lrt when data is valid", %{conn: conn} do
-      conn = post(conn, Routes.py_task_path(conn, :lrt_create), py_task: @create_attrs)
+      conn = post(conn,
+        Routes.py_task_path(conn, :lrt_create),
+        py_task: @create_attrs)
       assert %{"id" => id} = json_response(conn, 201)["data"]
 
       conn = get(conn, Routes.py_task_path(conn, :lrt_show, id))

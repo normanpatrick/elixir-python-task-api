@@ -10,6 +10,10 @@ defmodule MyAppWeb.PyTaskView do
     %{data: render_one(py_task, PyTaskView, "py_task.json")}
   end
 
+  def render("error.json", %{errors: errors}) do
+    %{errors: errors}
+  end
+
   def render("py_task.json", %{py_task: py_task}) do
     %{id: py_task.id,
       name: py_task.name,

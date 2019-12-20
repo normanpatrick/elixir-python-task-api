@@ -2,21 +2,10 @@ defmodule MyAppWeb.SLRTaskController do
   use MyAppWeb, :controller
 
   alias MyApp.CLRTManager
+  alias MyApp.CommonUtils
   alias MyApp.CLRTManager.SLRTask
 
   action_fallback MyAppWeb.FallbackController
-
-  def translate_errors(changeset) do
-    Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
-      Enum.reduce(opts, msg, fn {key, value}, acc ->
-        String.replace(acc, "%{#{key}}", to_string(value))
-      end)
-    end)
-    |> Enum.reduce("", fn {k, v}, acc ->
-      joined_errors = Enum.join(v, "; ")
-      "#{acc}#{k}: #{joined_errors}\n"
-    end)
-  end
 
   def index(conn, _params) do
     slrtasks = CLRTManager.list_slrtasks()
@@ -36,7 +25,7 @@ defmodule MyAppWeb.SLRTaskController do
       {:error, %Ecto.Changeset{} = echangeset } ->
         conn
         |> put_status(:unprocessable_entity)
-        |> render("error.json", errors: translate_errors(echangeset))
+        |> render("error.json", errors: CommonUtils.translate_errors(echangeset))
     end
   end
 

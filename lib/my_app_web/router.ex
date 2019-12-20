@@ -11,6 +11,7 @@ defmodule MyAppWeb.Router do
     options "/things", SLRTaskController, :nothing
     post "/lrt", PyTaskController, :lrt_create
     get "/lrt/:id", PyTaskController, :lrt_show
+    get "/lrt", PyTaskController, :lrt_index
     resources "/pytasks", PyTaskController, only: [:index, :show, :create, :delete]
   end
 end

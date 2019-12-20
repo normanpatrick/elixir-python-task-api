@@ -3,6 +3,7 @@ defmodule MyAppWeb.PyTaskController do
 
   alias MyApp.PyTaskMgr
   alias MyApp.PyTaskMgr.PyTask
+  alias MyApp.CommonUtils
 
   action_fallback MyAppWeb.FallbackController
 
@@ -12,17 +13,31 @@ defmodule MyAppWeb.PyTaskController do
   end
 
   def lrt_create(conn, %{"py_task" => py_task_params}) do
-    with {:ok, %PyTask{} = py_task} <- PyTaskMgr.create_py_task(py_task_params) do
-      conn
-      |> put_status(:created)
-      |> put_resp_header("location", Routes.py_task_path(conn, :show, py_task))
-      |> render("show.json", py_task: py_task)
+    case PyTaskMgr.create_py_task(py_task_params) do
+    {:ok, %PyTask{} = py_task} ->
+        # need to hold on to this 'task' and the task must be able to post messages
+        # to something we provide here
+        _task = Task.async(fn -> PyTaskMgr.lrt_sample_task(15) end)
+        # Task.await(task)
+        conn
+        |> put_status(:created)
+        |> put_resp_header("location", Routes.py_task_path(conn, :show, py_task))
+        |> render("show.json", py_task: py_task)
+      {:error, %Ecto.Changeset{} = echangeset } ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render("error.json", errors: CommonUtils.translate_errors(echangeset))
     end
   end
 
   def lrt_show(conn, %{"id" => id}) do
     py_task = PyTaskMgr.get_py_task!(id)
     render(conn, "show.json", py_task: py_task)
+  end
+
+  def lrt_index(conn, _params) do
+    pytasks = PyTaskMgr.list_pytasks()
+    render(conn, "index.json", pytasks: pytasks)
   end
 
   def create(conn, %{"py_task" => py_task_params}) do

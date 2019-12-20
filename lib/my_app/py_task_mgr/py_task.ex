@@ -17,7 +17,7 @@ defmodule MyApp.PyTaskMgr.PyTask do
   def changeset(py_task, attrs) do
     py_task
     |> cast(attrs, [:name, :description, :status, :is_active])
-    |> validate_required([:name, :description, :status, :is_active])
+    |> validate_required([:name, :description, :is_active])
     |> unique_constraint(:name)
   end
 end
