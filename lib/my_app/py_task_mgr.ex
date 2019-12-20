@@ -104,9 +104,14 @@ defmodule MyApp.PyTaskMgr do
 
   def lrt_sample_task(id, how_many_seconds) do
     IO.puts("[#{id}] starting dummy lrt for #{how_many_seconds}s...")
+    py_task = get_py_task!(id)
+    IO.inspect(py_task)
     for i <- 0..how_many_seconds do
       :timer.sleep(1000)
-      IO.puts("[#{id}] at #{i} seconds")
+      status = "[#{id}] at #{i} seconds"
+      IO.puts(status)
+      update_py_task(py_task, %{status: status})
+      IO.inspect(get_py_task!(id))
     end
   end
 end

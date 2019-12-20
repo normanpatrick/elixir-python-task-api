@@ -55,7 +55,9 @@ defmodule MyAppWeb.PyTaskControllerTest do
                "is_active" => true,
                "name" => "some name",
                "status" => "some status"
-             } = json_response(conn, 200)["data"]
+      } = json_response(conn, 200)["data"]
+      # since LRT is async, let's wait for a short time here
+      :timer.sleep(1500)
     end
   end
 
