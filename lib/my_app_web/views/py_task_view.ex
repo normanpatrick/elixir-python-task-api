@@ -23,6 +23,7 @@ defmodule MyAppWeb.PyTaskView do
       name: py_task.name,
       description: py_task.description,
       status: py_task.status,
+      timestamp: py_task.inserted_at,
       is_active: py_task.is_active}
   end
 end

@@ -17,7 +17,7 @@ defmodule MyAppWeb.PyTaskController do
     {:ok, %PyTask{} = py_task} ->
         # need to hold on to this 'task' and the task must be able to post messages
         # to something we provide here
-        _task = Task.async(fn -> PyTaskMgr.lrt_sample_task(15) end)
+        _task = Task.async(fn -> PyTaskMgr.lrt_sample_task(py_task.id, 15) end)
         # Task.await(task)
         conn
         |> put_status(:created)

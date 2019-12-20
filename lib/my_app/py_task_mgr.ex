@@ -102,8 +102,8 @@ defmodule MyApp.PyTaskMgr do
     PyTask.changeset(py_task, %{})
   end
 
-  def lrt_sample_task(how_many_seconds) do
-    IO.puts("starting a dummy long running task for #{how_many_seconds}s...")
+  def lrt_sample_task(id, how_many_seconds) do
+    IO.puts("[#{id}] starting dummy lrt for #{how_many_seconds}s...")
     for i <- 0..how_many_seconds do
       :timer.sleep(1000)
       IO.puts("at #{i} seconds")
