@@ -105,13 +105,32 @@ defmodule MyApp.PyTaskMgr do
   def lrt_sample_task(id, how_many_seconds) do
     IO.puts("[#{id}] starting dummy lrt for #{how_many_seconds}s...")
     py_task = get_py_task!(id)
-    IO.inspect(py_task)
+    show_pytask_summary(py_task)
     for i <- 0..how_many_seconds do
       :timer.sleep(1000)
       status = "[#{id}] at #{i} seconds"
       IO.puts(status)
       update_py_task(py_task, %{status: status})
-      IO.inspect(get_py_task!(id))
+      show_pytask_summary(get_py_task!(id))
     end
   end
+
+  def lrt_sample_task_py(id, how_many_seconds) do
+    IO.puts("[#{id}] starting python lrt for #{how_many_seconds}s...")
+    ########## This needs to invoke python code #########
+    py_task = get_py_task!(id)
+    show_pytask_summary(py_task)
+    for i <- 0..how_many_seconds do
+      :timer.sleep(1000)
+      status = "[#{id}] at #{i} seconds"
+      IO.puts(status)
+      update_py_task(py_task, %{status: status})
+      show_pytask_summary(get_py_task!(id))
+    end
+  end
+
+  defp show_pytask_summary(py_task) do
+    IO.puts("ID: #{py_task.id}, status: #{py_task.status}")
+  end
+
 end

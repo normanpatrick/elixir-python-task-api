@@ -12,6 +12,31 @@ defmodule MyAppWeb.PyTaskController do
     render(conn, "index.json", pytasks: pytasks)
   end
 
+  def lrt_hook(conn, %{}=task_data) do
+    # IO.inspect(task_data, label: "lrt_hook")
+    # incoming data may indicate START/STOP and associated data with an id
+    # - must always have an id, that is in the db already (from create_task)
+    # - is_active: false means STOP
+    # - update only :status and :is_active in the db from this data
+
+    # if :ok, reflect the incoming data, for debugging
+    # else return some error with details
+    case task_data do
+      %{"id" => id, "is_active" => is_active, "status" => status} ->
+        PyTaskMgr.update_py_task(PyTaskMgr.get_py_task!(id),
+          %{status: status, is_active: is_active})
+        conn
+        |> put_status(200)
+        |> render("info.json", %{info: task_data})
+      _ ->
+        conn
+        |> put_status(422)
+        |> render("error.json",
+          %{errors:
+            %{msg: "missing fields, must provide 'id', 'is_active', 'status'"}})
+    end
+  end
+
   def lrt_create(conn, %{"py_task" => py_task_params}) do
     case PyTaskMgr.create_py_task(py_task_params) do
     {:ok, %PyTask{} = py_task} ->
@@ -51,11 +76,20 @@ defmodule MyAppWeb.PyTaskController do
   end
 
   def create(conn, %{"py_task" => py_task_params}) do
-    with {:ok, %PyTask{} = py_task} <- PyTaskMgr.create_py_task(py_task_params) do
-      conn
-      |> put_status(:created)
-      |> put_resp_header("location", Routes.py_task_path(conn, :show, py_task))
-      |> render("show.json", py_task: py_task)
+    case PyTaskMgr.create_py_task(py_task_params) do
+    {:ok, %PyTask{} = py_task} ->
+        # need to hold on to this 'task' and the task must be able to post messages
+        # to something we provide here
+        _task = Task.async(fn -> PyTaskMgr.lrt_sample_task_py(py_task.id, 15) end)
+        # Task.await(task)
+        conn
+        |> put_status(:created)
+        |> put_resp_header("location", Routes.py_task_path(conn, :show, py_task))
+        |> render("show.json", py_task: py_task)
+      {:error, %Ecto.Changeset{} = echangeset } ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render("error.json", errors: CommonUtils.translate_errors(echangeset))
     end
   end
 

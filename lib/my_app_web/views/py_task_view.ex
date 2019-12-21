@@ -3,11 +3,11 @@ defmodule MyAppWeb.PyTaskView do
   alias MyAppWeb.PyTaskView
 
   def render("index.json", %{pytasks: pytasks}) do
-    %{data: render_many(pytasks, PyTaskView, "py_task.json")}
+    render_many(pytasks, PyTaskView, "py_task.json")
   end
 
   def render("show.json", %{py_task: py_task}) do
-    %{data: render_one(py_task, PyTaskView, "py_task.json")}
+    render_one(py_task, PyTaskView, "py_task.json")
   end
 
   def render("error.json", %{errors: errors}) do
@@ -23,7 +23,7 @@ defmodule MyAppWeb.PyTaskView do
       name: py_task.name,
       description: py_task.description,
       status: py_task.status,
-      timestamp: py_task.inserted_at,
+      created: py_task.inserted_at,
       is_active: py_task.is_active}
   end
 end
