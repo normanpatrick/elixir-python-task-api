@@ -117,16 +117,9 @@ defmodule MyApp.PyTaskMgr do
 
   def lrt_sample_task_py(id, how_many_seconds) do
     IO.puts("[#{id}] starting python lrt for #{how_many_seconds}s...")
-    ########## This needs to invoke python code #########
-    py_task = get_py_task!(id)
-    show_pytask_summary(py_task)
-    for i <- 0..how_many_seconds do
-      :timer.sleep(1000)
-      status = "[#{id}] at #{i} seconds"
-      IO.puts(status)
-      update_py_task(py_task, %{status: status})
-      show_pytask_summary(get_py_task!(id))
-    end
+    url = "http://localhost:4000/api/lrthook"
+    cmd = "python pylrt/sample_task.py --url #{url} --task_id #{id} --how-many-seconds #{how_many_seconds}"
+    port = Port.open({:spawn, cmd}, [:binary])
   end
 
   defp show_pytask_summary(py_task) do

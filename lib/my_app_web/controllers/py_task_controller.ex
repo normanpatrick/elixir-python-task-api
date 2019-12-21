@@ -25,6 +25,7 @@ defmodule MyAppWeb.PyTaskController do
       %{"id" => id, "is_active" => is_active, "status" => status} ->
         PyTaskMgr.update_py_task(PyTaskMgr.get_py_task!(id),
           %{status: status, is_active: is_active})
+        # IO.inspect(%{status: status, is_active: is_active})
         conn
         |> put_status(200)
         |> render("info.json", %{info: task_data})
