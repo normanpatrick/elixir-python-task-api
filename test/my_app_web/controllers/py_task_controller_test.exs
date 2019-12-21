@@ -30,7 +30,7 @@ defmodule MyAppWeb.PyTaskControllerTest do
   describe "index" do
     test "lists all pytasks", %{conn: conn} do
       conn = get(conn, Routes.py_task_path(conn, :index))
-      assert json_response(conn, 200)["data"] == []
+      assert json_response(conn, 200) == []
     end
   end
 
@@ -40,12 +40,35 @@ defmodule MyAppWeb.PyTaskControllerTest do
       assert %{"count" => 0} = json_response(conn, 200)
     end
   end
+  describe "lrt hook related tests" do
+    test "test lrt hook with valid data update", %{conn: conn} do
+      # create a record, get the id and the do update
+      conn = post(conn,
+        Routes.py_task_path(conn, :lrt_create),
+        py_task: @create_attrs)
+      assert %{"id" => id} = json_response(conn, 201)
+      # now call the hook with proper id
+      conn = post(conn,
+        Routes.py_task_path(conn, :lrt_hook),
+        %{Map.put(@create_attrs, :id, id) | status: "good status"})
+      # for debug puposes, the hook reflects anything we send
+      assert %{"description" => "some description",
+               "is_active" => true,
+               "name" => "some name",
+               "status" => "good status"} = json_response(conn, 200)
+    end
+    test "test lrt hook with bad data, no :id", %{conn: conn} do
+      conn = post(conn,
+        Routes.py_task_path(conn, :lrt_hook), @create_attrs)
+      assert %{"errors" => errors} = json_response(conn, 422)
+    end
+  end
   describe "create elixir task (lrt)" do
     test "renders lrt when data is valid", %{conn: conn} do
       conn = post(conn,
         Routes.py_task_path(conn, :lrt_create),
         py_task: @create_attrs)
-      assert %{"id" => id} = json_response(conn, 201)["data"]
+      assert %{"id" => id} = json_response(conn, 201)
 
       conn = get(conn, Routes.py_task_path(conn, :lrt_show, id))
 
@@ -55,7 +78,7 @@ defmodule MyAppWeb.PyTaskControllerTest do
                "is_active" => true,
                "name" => "some name",
                "status" => "some status"
-      } = json_response(conn, 200)["data"]
+      } = json_response(conn, 200)
       # since LRT is async, let's wait for a short time here
       :timer.sleep(1500)
     end
@@ -64,7 +87,7 @@ defmodule MyAppWeb.PyTaskControllerTest do
   describe "create py_task" do
     test "renders py_task when data is valid", %{conn: conn} do
       conn = post(conn, Routes.py_task_path(conn, :create), py_task: @create_attrs)
-      assert %{"id" => id} = json_response(conn, 201)["data"]
+      assert %{"id" => id} = json_response(conn, 201)
 
       conn = get(conn, Routes.py_task_path(conn, :show, id))
 
@@ -74,7 +97,9 @@ defmodule MyAppWeb.PyTaskControllerTest do
                "is_active" => true,
                "name" => "some name",
                "status" => "some status"
-             } = json_response(conn, 200)["data"]
+      } = json_response(conn, 200)
+      # since LRT is async, let's wait for a short time here
+      :timer.sleep(1500)
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -89,7 +114,7 @@ defmodule MyAppWeb.PyTaskControllerTest do
     @tag :skip
     test "renders py_task when data is valid", %{conn: conn, py_task: %PyTask{id: id} = py_task} do
       conn = put(conn, Routes.py_task_path(conn, :update, py_task), py_task: @update_attrs)
-      assert %{"id" => ^id} = json_response(conn, 200)["data"]
+      assert %{"id" => ^id} = json_response(conn, 200)
 
       conn = get(conn, Routes.py_task_path(conn, :show, id))
 
@@ -99,7 +124,7 @@ defmodule MyAppWeb.PyTaskControllerTest do
                "is_active" => false,
                "name" => "some updated name",
                "status" => "some updated status"
-             } = json_response(conn, 200)["data"]
+             } = json_response(conn, 200)
     end
 
     @tag :skip
