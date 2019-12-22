@@ -120,7 +120,11 @@ defmodule MyApp.PyTaskMgr do
     url = "http://localhost:4000/api/lrthook"
     # use unbuffered mode to avoid the following
     # Exception ignored in: <_io.TextIOWrapper name='<stdout>' mode='w' encoding='UTF-8'>
-    cmd = "python -u pylrt/sample_task.py --url #{url} --task_id #{id} --how-many-seconds #{how_many_seconds}"
+    # cmd = "python -u pylrt/sample_task.py --url #{url} --task_id #{id} --how-many-seconds #{how_many_seconds}"
+
+    # -u option seems to get killed immediately, something to do with
+    # stdout handling with Port? - wahoo fixme
+    cmd = "python pylrt/sample_task.py --url #{url} --task_id #{id} --how-many-seconds #{how_many_seconds}"
     _port = Port.open({:spawn, cmd}, [:binary])
   end
 
