@@ -7,6 +7,7 @@
 
 import sys
 import time
+import json
 import argparse
 from pprint import pprint
 import einterface
@@ -14,6 +15,13 @@ import sample_module as sm
 
 def main(args):
     print("hello from python")
+    if args.sync_task:
+        print(json.dumps({
+            "time": args.how_many_seconds,
+            "my_id": args.task_id,
+            "data": 1234.56
+        }))
+        return
     for i in range(args.how_many_seconds):
         time.sleep(1)
         status = "at {} second, fn(x,y) = {}".format(i, sm.add(100, i))
@@ -35,6 +43,7 @@ if __name__ == '__main__':
     parser.add_argument('--how-many-seconds', type=int, default=10)
     parser.add_argument('--url', required=True)
     parser.add_argument('--task_id', required=True)
+    parser.add_argument('--sync-task', action='store_true')
     args = parser.parse_args()
     print(vars(args))
     main(args)

@@ -118,8 +118,10 @@ defmodule MyApp.PyTaskMgr do
   def lrt_sample_task_py(id, how_many_seconds) do
     IO.puts("[#{id}] starting python lrt for #{how_many_seconds}s...")
     url = "http://localhost:4000/api/lrthook"
-    cmd = "python pylrt/sample_task.py --url #{url} --task_id #{id} --how-many-seconds #{how_many_seconds}"
-    port = Port.open({:spawn, cmd}, [:binary])
+    # use unbuffered mode to avoid the following
+    # Exception ignored in: <_io.TextIOWrapper name='<stdout>' mode='w' encoding='UTF-8'>
+    cmd = "python -u pylrt/sample_task.py --url #{url} --task_id #{id} --how-many-seconds #{how_many_seconds}"
+    _port = Port.open({:spawn, cmd}, [:binary])
   end
 
   defp show_pytask_summary(py_task) do

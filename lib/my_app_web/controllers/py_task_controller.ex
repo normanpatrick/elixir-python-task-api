@@ -12,6 +12,28 @@ defmodule MyAppWeb.PyTaskController do
     render(conn, "index.json", pytasks: pytasks)
   end
 
+  def task_sync_create(conn, %{}=task_data) do
+    # invoke a python task, let the process complete, collect result and respond
+    case task_data do
+      # invoke sync pytask here
+      %{"jobname" => jobname} ->
+        # use unbuffered mode to avoid the following
+        {outp, rc} = System.cmd("python", ["-u", "pylrt/sample_task.py", "--task_id", "1234", "--sync-task", "--url=xyz"])
+        conn
+        |> put_status(200)
+        |> render("info.json", %{info: %{
+                                    rc: rc,
+                                    output: outp,
+                                    res: "#{jobname} was completed"}})
+      _ ->
+        conn
+        |> put_status(422)
+        |> render("error.json",
+          %{errors:
+            %{msg: "missing fields, must provide a jobname"}})
+    end
+  end
+
   def lrt_hook(conn, %{}=task_data) do
     # IO.inspect(task_data, label: "lrt_hook")
     # incoming data may indicate START/STOP and associated data with an id

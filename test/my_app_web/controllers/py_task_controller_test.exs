@@ -147,6 +147,20 @@ defmodule MyAppWeb.PyTaskControllerTest do
     end
   end
 
+  describe "sync pytask tests" do
+    test "valid req to do a sync task", %{conn: conn} do
+      conn = post(conn, Routes.py_task_path(conn, :task_sync_create),
+        %{jobname: "test1"})
+      assert %{"res" => "test1 was completed", "rc" => 0} = json_response(conn, 200)
+    end
+    test "invalid req must fail", %{conn: conn} do
+      conn = post(conn, Routes.py_task_path(conn, :task_sync_create),
+        %{nonsense: "test1"})
+      assert %{"errors" => %{"msg" => "missing fields, must provide a jobname"}} =
+        json_response(conn, 422)
+    end
+  end
+
   defp create_py_task(_) do
     py_task = fixture(:py_task)
     {:ok, py_task: py_task}

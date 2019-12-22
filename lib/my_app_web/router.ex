@@ -15,5 +15,6 @@ defmodule MyAppWeb.Router do
     get "/lrtclear", PyTaskController, :lrt_clear
     post "/lrthook", PyTaskController, :lrt_hook
     resources "/pytasks", PyTaskController, only: [:index, :show, :create, :delete]
+    post "/pytasks/sync", PyTaskController, :task_sync_create
   end
 end
