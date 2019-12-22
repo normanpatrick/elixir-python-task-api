@@ -6,6 +6,22 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from jsonrpcserver import method, dispatch
 
+from argparse import Namespace
+import sample_task as ST
+
+@method
+def sample_task(task_id,
+                how_many_seconds,
+                url_hook,
+                is_sync_task):
+    # return task_id, how_many_seconds, url_hook, is_sync_task
+    args = Namespace(
+        task_id=task_id,
+        how_many_seconds=how_many_seconds,
+        url=url_hook,
+        sync_task=is_sync_task)
+    return ST.main(args)
+
 @method
 def ping(param1, param2):
     return "pong", {"param1": param1, "param2": param2}
