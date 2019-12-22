@@ -115,6 +115,12 @@ defmodule MyApp.PyTaskMgr do
     end
   end
 
+  def lrt_sample_sync_task_py() do
+    # invoke a python task, let the process complete, collect stdout and respond
+    # use unbuffered mode to avoid the following
+    System.cmd("python", ["-u", "pylrt/sample_task.py", "--task_id", "1234", "--sync-task", "--url=xyz"])
+  end
+
   def lrt_sample_task_py(id, how_many_seconds) do
     IO.puts("[#{id}] starting python lrt for #{how_many_seconds}s...")
     url = "http://localhost:4000/api/lrthook"

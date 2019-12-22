@@ -13,12 +13,10 @@ defmodule MyAppWeb.PyTaskController do
   end
 
   def task_sync_create(conn, %{}=task_data) do
-    # invoke a python task, let the process complete, collect result and respond
     case task_data do
       # invoke sync pytask here
       %{"jobname" => jobname} ->
-        # use unbuffered mode to avoid the following
-        {outp, rc} = System.cmd("python", ["-u", "pylrt/sample_task.py", "--task_id", "1234", "--sync-task", "--url=xyz"])
+        {outp, rc} = PyTaskMgr.lrt_sample_sync_task_py
         conn
         |> put_status(200)
         |> render("info.json", %{info: %{
