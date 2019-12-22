@@ -16,5 +16,7 @@ defmodule MyAppWeb.Router do
     post "/lrthook", PyTaskController, :lrt_hook
     resources "/pytasks", PyTaskController, only: [:index, :show, :create, :delete]
     post "/pytasks/sync", PyTaskController, :task_sync_create
+
+    resources "/jsonrpc", JsonRpcTaskController, only: [:index, :show, :create, :delete]
   end
 end
