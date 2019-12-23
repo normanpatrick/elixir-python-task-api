@@ -7,6 +7,7 @@ defmodule MyApp.JsonRpcTaskContext do
   alias MyApp.Repo
 
   alias MyApp.JsonRpcTaskContext.JsonRpcTask
+  alias JSONRPC2.Clients.HTTP
 
   @doc """
   Returns the list of jsonrpctasks.
@@ -101,4 +102,19 @@ defmodule MyApp.JsonRpcTaskContext do
   def change_json_rpc_task(%JsonRpcTask{} = json_rpc_task) do
     JsonRpcTask.changeset(json_rpc_task, %{})
   end
+
+  @doc """
+  Make a call with the client to the server, using named args
+
+  Examples in json_rpc_task_controller_test.exs
+  """
+  def rpc_invoke(url, fn_name, args) do
+    opts = [] # [{:hackney.recv_timeout, 10_000}]
+    x = HTTP.call(url,
+      fn_name,
+      Map.new(args),
+      hackney_opts: opts)
+    IO.inspect(x, label: "hackney-x")
+  end
+
 end

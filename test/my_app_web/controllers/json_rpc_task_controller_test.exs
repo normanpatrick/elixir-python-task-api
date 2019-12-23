@@ -42,12 +42,12 @@ defmodule MyAppWeb.JsonRpcTaskControllerTest do
       conn = get(conn, Routes.json_rpc_task_path(conn, :show, id))
 
       assert %{
-               "id" => id,
-               "description" => "some description",
-               "is_active" => true,
-               "name" => "some name",
-               "status" => "some status"
-             } = json_response(conn, 200)["data"]
+        "id" => id,
+        "description" => "some description",
+        "is_active" => true,
+        "name" => "some name",
+        "status" => "some status"
+      } = json_response(conn, 200)["data"]
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -67,12 +67,12 @@ defmodule MyAppWeb.JsonRpcTaskControllerTest do
       conn = get(conn, Routes.json_rpc_task_path(conn, :show, id))
 
       assert %{
-               "id" => id,
-               "description" => "some updated description",
-               "is_active" => false,
-               "name" => "some updated name",
-               "status" => "some updated status"
-             } = json_response(conn, 200)["data"]
+        "id" => id,
+        "description" => "some updated description",
+        "is_active" => false,
+        "name" => "some updated name",
+        "status" => "some updated status"
+      } = json_response(conn, 200)["data"]
     end
 
     @tag :skip
@@ -92,6 +92,46 @@ defmodule MyAppWeb.JsonRpcTaskControllerTest do
       assert_error_sent 404, fn ->
         get(conn, Routes.json_rpc_task_path(conn, :show, json_rpc_task))
       end
+    end
+  end
+
+  describe "jsonrpc call tests" do
+    # wahoo - fixme: hardcoded stuff
+    @url "http://localhost:5000/"
+    @url_hook "http://localhost:4000/api/lrthook"
+
+    test "invoke a simple py task rpc call" do
+      res = JsonRpcTaskContext.rpc_invoke(@url,
+        "ping",
+        %{param1: "ex-p1",
+          param2: 1001.23})
+      assert {:ok, ["pong", %{"param1" => "ex-p1", "param2" => 1001.23}]} = res
+    end
+    test "invoke simple_task but print args and complete" do
+      assert {:ok, nil} = JsonRpcTaskContext.rpc_invoke(@url,
+        "sample_task",
+        %{task_id: 123,
+          how_many_seconds: 4,
+          url_hook: @url_hook,
+          is_sync_task: true})
+    end
+
+    test "py task rpc call, py will do webhook req", %{conn: conn} do
+      # first, creat a task-entry in db and get the id
+      conn = post(conn, Routes.py_task_path(conn, :create_task_entry_only),
+        py_task: %{ description: "rpc task",
+                    is_active: true,
+                    name: "rpc-task-1",
+                    status: "task created over rpc"
+        })
+      assert %{"id" => id} = json_response(conn, 201)
+      IO.inspect(id, label: "using id:")
+      assert {:ok, nil} =
+        JsonRpcTaskContext.rpc_invoke(@url, "sample_task",
+          %{task_id: id,
+            how_many_seconds: 6,
+            url_hook: @url_hook,
+            is_sync_task: false})
     end
   end
 

@@ -96,6 +96,21 @@ defmodule MyAppWeb.PyTaskController do
     render(conn, "info.json", info: %{count: count})
   end
 
+  def create_task_entry_only(conn, %{"py_task" => py_task_params}) do
+    case PyTaskMgr.create_py_task(py_task_params) do
+    {:ok, %PyTask{} = py_task} ->
+        conn
+        |> put_status(:created)
+        |> put_resp_header("location", Routes.py_task_path(conn, :show, py_task))
+        |> render("show.json", py_task: py_task)
+      {:error, %Ecto.Changeset{} = echangeset } ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render("error.json", errors: CommonUtils.translate_errors(echangeset))
+    end
+  end
+
+
   def create(conn, %{"py_task" => py_task_params}) do
     case PyTaskMgr.create_py_task(py_task_params) do
     {:ok, %PyTask{} = py_task} ->
