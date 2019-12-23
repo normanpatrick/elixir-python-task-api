@@ -59,6 +59,7 @@ defmodule MyAppWeb.JsonRpcTaskControllerTest do
   describe "update json_rpc_task" do
     setup [:create_json_rpc_task]
 
+    @tag :skip
     test "renders json_rpc_task when data is valid", %{conn: conn, json_rpc_task: %JsonRpcTask{id: id} = json_rpc_task} do
       conn = put(conn, Routes.json_rpc_task_path(conn, :update, json_rpc_task), json_rpc_task: @update_attrs)
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
@@ -74,6 +75,7 @@ defmodule MyAppWeb.JsonRpcTaskControllerTest do
              } = json_response(conn, 200)["data"]
     end
 
+    @tag :skip
     test "renders errors when data is invalid", %{conn: conn, json_rpc_task: json_rpc_task} do
       conn = put(conn, Routes.json_rpc_task_path(conn, :update, json_rpc_task), json_rpc_task: @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
