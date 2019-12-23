@@ -15,5 +15,6 @@ defmodule Server.Application do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Server.Supervisor]
     Supervisor.start_link(children, opts)
+    JSONRPC2.Servers.HTTP.http(Server)
   end
 end
