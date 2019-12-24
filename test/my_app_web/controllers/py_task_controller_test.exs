@@ -161,6 +161,32 @@ defmodule MyAppWeb.PyTaskControllerTest do
     end
   end
 
+  describe "keeping track of active tasks" do
+    test "create one active task", %{conn: conn} do
+      conn = post(conn, Routes.py_task_path(conn, :create_task_entry_only),
+        py_task: @create_attrs)
+      assert %{"id" => id} = json_response(conn, 201)
+
+      conn = get(conn, Routes.py_task_path(conn, :index))
+      tasks = json_response(conn, 200)
+      assert true = Enum.any?(tasks, fn x -> x["is_active"] == true end)
+    end
+    test "create non-active task", %{conn: conn} do
+      conn = post(conn, Routes.py_task_path(conn, :create_task_entry_only),
+        py_task: %{ @create_attrs | is_active: false})
+      assert %{"id" => id} = json_response(conn, 201)
+
+      conn = get(conn, Routes.py_task_path(conn, :index))
+      tasks = json_response(conn, 200)
+      assert false == Enum.any?(tasks, fn x -> x["is_active"] == true end)
+    end
+    test "create no task", %{conn: conn} do
+      conn = get(conn, Routes.py_task_path(conn, :index))
+      tasks = json_response(conn, 200)
+      assert false == Enum.any?(tasks, fn x -> x["is_active"] == true end)
+    end
+  end
+
   defp create_py_task(_) do
     py_task = fixture(:py_task)
     {:ok, py_task: py_task}
